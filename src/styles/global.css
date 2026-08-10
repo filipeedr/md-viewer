@@ -104,11 +104,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px 8px;
+  /* Symmetric padding keeps the text centered and clears the fixed
+     repo-link button in the bottom-left corner. */
+  padding: 20px 76px;
 }
 
 .empty-state__footer p {
-  max-width: 520px;
+  max-width: 100%;
   margin: 0;
   font-size: 12px;
   font-weight: 400;
