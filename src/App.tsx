@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import EmptyState from "./components/EmptyState";
+import RepoLink from "./components/RepoLink";
 import Viewer from "./components/Viewer";
 import { renderMarkdown } from "./lib/markdown";
 
@@ -19,15 +20,18 @@ export default function App() {
     setLoadedDocument({ fileName: file.name, html });
   }, []);
 
-  if (loadedDocument) {
-    return (
-      <Viewer
-        fileName={loadedDocument.fileName}
-        html={loadedDocument.html}
-        onFileSelected={handleFileSelected}
-      />
-    );
-  }
-
-  return <EmptyState onFileSelected={handleFileSelected} />;
+  return (
+    <>
+      {loadedDocument ? (
+        <Viewer
+          fileName={loadedDocument.fileName}
+          html={loadedDocument.html}
+          onFileSelected={handleFileSelected}
+        />
+      ) : (
+        <EmptyState onFileSelected={handleFileSelected} />
+      )}
+      <RepoLink />
+    </>
+  );
 }
