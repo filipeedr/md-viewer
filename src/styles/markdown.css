@@ -23,6 +23,8 @@
   font-weight: 600;
   line-height: 1.4;
   color: var(--color-text);
+  /* Keeps a heading clear of the viewport edge when jumped to from the TOC. */
+  scroll-margin-top: 24px;
 }
 
 .markdown-body h1 {
@@ -94,7 +96,7 @@
 .markdown-body code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 13px;
-  background: #ececec;
+  background: var(--color-code-bg);
   padding: 2px 5px;
   border-radius: 4px;
 }
@@ -102,7 +104,7 @@
 .markdown-body pre {
   margin: 0 0 20px;
   padding: 16px;
-  background: #efefef;
+  background: var(--color-pre-bg);
   border-radius: 8px;
   overflow-x: auto;
 }
@@ -150,7 +152,7 @@
 }
 
 .markdown-body th {
-  background: #eeeeee;
+  background: var(--color-table-header-bg);
   font-weight: 600;
 }
 

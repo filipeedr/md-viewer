@@ -4,6 +4,21 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Resolves the theme (stored override, else system preference) and
+         stamps it on <html> before any stylesheet loads, so the first paint
+         is already in the right theme. -->
+    <script>
+      (function () {
+        var t;
+        try {
+          t = localStorage.getItem("md-viewer:theme");
+        } catch (e) {}
+        if (t !== "light" && t !== "dark") {
+          t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.dataset.theme = t;
+      })();
+    </script>
     <title>MD Viewer</title>
   </head>
   <body>
