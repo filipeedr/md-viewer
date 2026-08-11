@@ -1,30 +1,41 @@
-import { useCallback, useEffect, useState, type DragEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, type DragEvent } from "react";
 import { isMarkdownFile } from "../lib/file";
+import type { TocItem } from "../lib/markdown";
+import { SCROLL_EDGE_THRESHOLD, getMaxScroll, isAtPageBottom } from "../lib/scroll";
+import Toc from "./Toc";
 import "../styles/markdown.css";
 
 interface ViewerProps {
   fileName: string;
   html: string;
+  headings: TocItem[];
   onFileSelected: (file: File) => void;
 }
 
-const SCROLL_EDGE_THRESHOLD = 2;
-
 function getScrollState() {
-  const scrollTop = window.scrollY;
-  const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
   return {
-    atTop: scrollTop <= SCROLL_EDGE_THRESHOLD,
-    atBottom: maxScroll <= 0 || scrollTop >= maxScroll - SCROLL_EDGE_THRESHOLD,
+    atTop: window.scrollY <= SCROLL_EDGE_THRESHOLD,
+    // A page too short to scroll is at both edges at once, so both buttons
+    // end up disabled — which is exactly right for a page that can't move.
+    atBottom: getMaxScroll() <= 0 || isAtPageBottom(),
   };
 }
 
-export default function Viewer({ fileName, html, onFileSelected }: ViewerProps) {
+export default function Viewer({ fileName, html, headings, onFileSelected }: ViewerProps) {
   const [{ atTop, atBottom }, setScrollState] = useState(getScrollState);
   const [dragActive, setDragActive] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setScrollState(getScrollState());
+    // Keep the previous object when neither edge changed: scroll fires many
+    // times a second and a fresh object would re-render this whole subtree
+    // (the TOC included) on every tick for nothing.
+    const handleScroll = () =>
+      setScrollState((previous) => {
+        const next = getScrollState();
+        return next.atTop === previous.atTop && next.atBottom === previous.atBottom
+          ? previous
+          : next;
+      });
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("resize", handleScroll);
@@ -58,6 +69,19 @@ export default function Viewer({ fileName, html, onFileSelected }: ViewerProps) 
     setDragActive(false);
   }, []);
 
+  // The content element is memoized on the html string so the re-renders
+  // driven by scroll/drag state never re-reconcile the document subtree.
+  // Without this, react-dom re-applies dangerouslySetInnerHTML on those
+  // re-renders, recreating every heading node and silently orphaning the
+  // elements the TOC's IntersectionObserver is watching.
+  // (html is sanitized with DOMPurify in lib/markdown.ts before reaching here.)
+  const content = useMemo(
+    () => (
+      <div className="viewer__content markdown-body" dangerouslySetInnerHTML={{ __html: html }} />
+    ),
+    [html],
+  );
+
   const handleDrop = useCallback(
     (event: DragEvent<HTMLDivElement>) => {
       event.preventDefault();
@@ -77,9 +101,11 @@ export default function Viewer({ fileName, html, onFileSelected }: ViewerProps) 
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
+      {/* Fixed-position sidebar — placement in JSX is only semantic. */}
+      <Toc items={headings} />
+
       <div className="viewer__filename">{fileName}</div>
-      {/* html is sanitized with DOMPurify in lib/markdown.ts before reaching here */}
-      <div className="viewer__content markdown-body" dangerouslySetInnerHTML={{ __html: html }} />
+      {content}
 
       <div className="viewer__scroll-controls">
         <button

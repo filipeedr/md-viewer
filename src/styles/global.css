@@ -1,12 +1,44 @@
 :root {
+  color-scheme: light;
   --color-bg: #f7f7f7;
   --color-text: #2b2b2b;
   --color-text-secondary: #7c7c7c;
   --color-text-tertiary: #a9a9a9;
   --color-border: #e3e3e3;
   --color-error: #b3564a;
+  --color-surface: #ffffff;
+  --color-code-bg: #ececec;
+  --color-pre-bg: #efefef;
+  --color-table-header-bg: #eeeeee;
+  /* One step darker than --color-text-secondary: the TOC sets its rows at
+     12.5px, where that token only reaches 3.9:1 on the page background. */
+  --color-toc-item: #6e6e6e;
+  --shadow-rest: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 2px 6px rgba(0, 0, 0, 0.12);
   --font-sans:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Dark palette — the neutral-gray mirror of the light ramp. The inline boot
+   script in index.html always stamps a resolved data-theme before first
+   paint, so this attribute selector is the single source of truth (no
+   prefers-color-scheme media queries needed in CSS). */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #161616;
+  --color-text: #d8d8d8;
+  --color-text-secondary: #9a9a9a;
+  --color-text-tertiary: #6e6e6e;
+  --color-border: #2e2e2e;
+  --color-error: #c9776c;
+  --color-surface: #1f1f1f;
+  --color-code-bg: #262626;
+  --color-pre-bg: #202020;
+  --color-table-header-bg: #232323;
+  /* Dark rows already clear AA at 6.4:1, so this matches the secondary tier. */
+  --color-toc-item: #9a9a9a;
+  --shadow-rest: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
 *,
@@ -145,7 +177,8 @@ body {
 }
 
 .viewer--drag-active .viewer__filename,
-.viewer--drag-active .viewer__content {
+.viewer--drag-active .viewer__content,
+.viewer--drag-active .toc {
   opacity: 0.4;
   transition: opacity 0.15s ease;
 }
@@ -170,10 +203,10 @@ body {
   height: 40px;
   border: 1px solid var(--color-border);
   border-radius: 50%;
-  background: #ffffff;
+  background: var(--color-surface);
   color: var(--color-text-secondary);
   cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-rest);
   transition:
     opacity 0.15s ease,
     color 0.15s ease,
@@ -182,7 +215,7 @@ body {
 
 .viewer__scroll-button:hover:not(:disabled) {
   color: var(--color-text);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-hover);
 }
 
 .viewer__scroll-button:disabled {
@@ -201,6 +234,138 @@ body {
   height: 18px;
 }
 
+/* Theme toggle */
+
+.theme-toggle {
+  position: fixed;
+  left: 24px;
+  /* Stacked above the repo link: 24px edge + 40px button + 8px gap. */
+  bottom: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  box-shadow: var(--shadow-rest);
+  z-index: 10;
+  transition:
+    color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.theme-toggle:hover {
+  color: var(--color-text);
+  box-shadow: var(--shadow-hover);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--color-text-tertiary);
+  outline-offset: 2px;
+}
+
+.theme-toggle svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Table of contents sidebar — a hairline rail with a cursor sliding to the
+   section being read. No container, no label: just the rule and the titles. */
+
+.toc {
+  position: fixed;
+  top: 40px;
+  left: 32px;
+  width: 200px;
+  /* Stops 8px short of the bottom-left button stack (the theme toggle starts
+     at 100vh − 112px), so a long rail never ends up underneath it — the
+     buttons sit on a higher layer and would swallow the last row's clicks. */
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
+  /* Lives in the left gutter, so it only fits when the viewport can hold
+     the 680px column plus a sidebar on each side without overlapping. */
+  display: none;
+  z-index: 5;
+}
+
+@media (min-width: 1160px) {
+  .toc {
+    display: block;
+  }
+}
+
+.toc__rail {
+  position: relative;
+  padding-left: 14px;
+  border-left: 1px solid var(--color-border);
+}
+
+.toc__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* The cursor: sits on the rail, centered over the hairline. Positioned from
+   JS against the active row's box. */
+.toc__thumb {
+  position: absolute;
+  left: -1px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--color-text);
+  transition:
+    top 0.18s ease,
+    height 0.18s ease;
+}
+
+.toc__item {
+  display: block;
+  width: 100%;
+  padding: 5px 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--color-toc-item);
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.toc__item:hover {
+  color: var(--color-text);
+}
+
+.toc__item--active {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.toc__item--level-3 {
+  padding-left: 14px;
+  font-size: 12px;
+}
+
+.toc__item:focus-visible {
+  outline: 2px solid var(--color-text-tertiary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toc__thumb {
+    transition: none;
+  }
+}
+
 /* Repository link */
 
 .repo-link {
@@ -214,9 +379,9 @@ body {
   height: 40px;
   border: 1px solid var(--color-border);
   border-radius: 50%;
-  background: #ffffff;
+  background: var(--color-surface);
   color: var(--color-text-secondary);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-rest);
   z-index: 10;
   transition:
     color 0.15s ease,
@@ -225,7 +390,7 @@ body {
 
 .repo-link:hover {
   color: var(--color-text);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-hover);
 }
 
 .repo-link:focus-visible {
