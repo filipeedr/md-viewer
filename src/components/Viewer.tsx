@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type DragEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, type DragEvent, type MouseEvent } from "react";
 import { isMarkdownFile } from "../lib/file";
 import type { TocItem } from "../lib/markdown";
 import { SCROLL_EDGE_THRESHOLD, getMaxScroll, isAtPageBottom } from "../lib/scroll";
@@ -59,6 +59,20 @@ export default function Viewer({ fileName, html, headings, onFileSelected }: Vie
     window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" });
   }, []);
 
+  // Delegated rather than attached per-block: the content div is raw HTML
+  // from dangerouslySetInnerHTML, so there are no React elements to hang
+  // individual onClick handlers off of.
+  const handleContentClick = useCallback((event: MouseEvent<HTMLDivElement>) => {
+    const button = (event.target as HTMLElement).closest(".code-block__copy");
+    if (!(button instanceof HTMLButtonElement)) return;
+    const code = button.parentElement?.querySelector("code");
+    if (!code) return;
+    navigator.clipboard.writeText(code.textContent ?? "").then(() => {
+      button.classList.add("code-block__copy--copied");
+      window.setTimeout(() => button.classList.remove("code-block__copy--copied"), 1500);
+    });
+  }, []);
+
   const handleDragOver = useCallback((event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     setDragActive(true);
@@ -77,9 +91,13 @@ export default function Viewer({ fileName, html, headings, onFileSelected }: Vie
   // (html is sanitized with DOMPurify in lib/markdown.ts before reaching here.)
   const content = useMemo(
     () => (
-      <div className="viewer__content markdown-body" dangerouslySetInnerHTML={{ __html: html }} />
+      <div
+        className="viewer__content markdown-body"
+        onClick={handleContentClick}
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
     ),
-    [html],
+    [html, handleContentClick],
   );
 
   const handleDrop = useCallback(

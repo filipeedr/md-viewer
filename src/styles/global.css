@@ -103,8 +103,8 @@ body {
 }
 
 .empty-state__icon {
-  width: 64px;
-  height: 64px;
+  width: 48px;
+  height: 48px;
   color: var(--color-text-tertiary);
   transition: opacity 0.15s ease;
 }

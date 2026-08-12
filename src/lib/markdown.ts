@@ -56,6 +56,27 @@ renderer.tablecell = function tablecell(token: Tokens.TableCell) {
   return `<${tag}${align}${cellClass}>${content}</${tag}>\n`;
 };
 
+function escapeHtml(text: string): string {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+// Fenced/indented code blocks get wrapped in a container with a copy
+// button (styled purely in CSS, no inline SVG, so DOMPurify's plain "html"
+// profile is enough — no need to also allow the svg profile). The click is
+// handled by delegation in Viewer.tsx, since this HTML is inserted via
+// dangerouslySetInnerHTML rather than mounted as React elements.
+renderer.code = function code({ text, lang }: Tokens.Code): string {
+  const langString = lang?.match(/\S*/)?.[0];
+  const codeText = `${text.replace(/\n$/, "")}\n`;
+  const languageClass = langString ? ` class="language-${escapeHtml(langString)}"` : "";
+  return (
+    `<div class="code-block">` +
+    `<button type="button" class="code-block__copy" aria-label="Copy code"></button>` +
+    `<pre><code${languageClass}>${escapeHtml(codeText)}</code></pre>` +
+    `</div>\n`
+  );
+};
+
 // Headings get slug ids so the TOC can link to them. The "h-" prefix keeps
 // slugs from ever colliding with document/window properties (e.g. a heading
 // named "Location"), which DOMPurify's SANITIZE_DOM guard would otherwise
