@@ -13,6 +13,7 @@
   /* One step darker than --color-text-secondary: the TOC sets its rows at
      12.5px, where that token only reaches 3.9:1 on the page background. */
   --color-toc-item: #6e6e6e;
+  --color-pattern-dot: rgba(0, 0, 0, 0.07);
   --shadow-rest: 0 1px 3px rgba(0, 0, 0, 0.08);
   --shadow-hover: 0 2px 6px rgba(0, 0, 0, 0.12);
   --font-sans:
@@ -37,6 +38,7 @@
   --color-table-header-bg: #232323;
   /* Dark rows already clear AA at 6.4:1, so this matches the secondary tier. */
   --color-toc-item: #9a9a9a;
+  --color-pattern-dot: rgba(255, 255, 255, 0.07);
   --shadow-rest: 0 1px 3px rgba(0, 0, 0, 0.4);
   --shadow-hover: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
@@ -74,6 +76,8 @@ body {
   justify-content: center;
   cursor: pointer;
   padding: 96px 20px;
+  background-image: radial-gradient(var(--color-pattern-dot) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 .empty-state:focus-visible {
