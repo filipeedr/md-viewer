@@ -97,14 +97,18 @@ export default function EmptyState({ onFileSelected }: EmptyStateProps) {
             strokeLinecap="round"
           />
         </svg>
-        <p className="empty-state__hint">Just drop or choose your .md file</p>
+        <h1 className="empty-state__title">MD Viewer</h1>
+        <p className="empty-state__hint">
+          Drop or choose your .md file to preview it instantly, fully formatted.
+        </p>
         {error && <p className="empty-state__error">{error}</p>}
       </div>
 
       <div className="empty-state__footer">
         <p>
-          The file is formatted and processed solely on the local machine. Nothing is sent to
-          servers or stored in a database.
+          Renders GitHub-flavored Markdown — headings, tables, code blocks, links, and images —
+          entirely in your browser. The file is processed on the local machine only; nothing is
+          sent to servers or stored in a database.
         </p>
       </div>
     </div>
