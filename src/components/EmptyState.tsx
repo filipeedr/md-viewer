@@ -97,18 +97,21 @@ export default function EmptyState({ onFileSelected }: EmptyStateProps) {
             strokeLinecap="round"
           />
         </svg>
-        <h1 className="empty-state__title">MlookD</h1>
-        <p className="empty-state__hint">
-          Free online Markdown (.md) viewer — drop or choose a file to preview it instantly.
-        </p>
+        {/* Not shown visually — read by screen readers and by crawlers that
+            don't render CSS/JS, so the page still has a real, keyword-clear
+            heading without changing the minimal on-screen design. */}
+        <h1 className="visually-hidden">MlookD — free online Markdown (.md) viewer</h1>
+        <p className="empty-state__hint">Just drop or choose your .md file</p>
         {error && <p className="empty-state__error">{error}</p>}
       </div>
 
       <div className="empty-state__footer">
         <p>
-          Renders GitHub-flavored Markdown — headings, tables, code blocks, links, and images —
-          entirely in your browser. The file is processed on the local machine only; nothing is
-          sent to servers or stored in a database.
+          The file is formatted and processed solely on the local machine. Nothing is sent to
+          servers or stored in a database.
+        </p>
+        <p className="visually-hidden">
+          Renders GitHub-flavored Markdown — headings, tables, code blocks, links, and images.
         </p>
       </div>
     </div>
