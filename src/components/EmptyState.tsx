@@ -97,9 +97,9 @@ export default function EmptyState({ onFileSelected }: EmptyStateProps) {
             strokeLinecap="round"
           />
         </svg>
-        <h1 className="empty-state__title">MD Viewer</h1>
+        <h1 className="empty-state__title">MlookD</h1>
         <p className="empty-state__hint">
-          Drop or choose your .md file to preview it instantly, fully formatted.
+          Free online Markdown (.md) viewer — drop or choose a file to preview it instantly.
         </p>
         {error && <p className="empty-state__error">{error}</p>}
       </div>
