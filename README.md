@@ -1,6 +1,8 @@
-# md-viewer
+# MlookD
 
-A minimal, client-only Markdown viewer. Drop or choose a `.md` file and read it fully formatted — nothing is uploaded, saved, or cached. Refreshing the page always returns to a blank slate.
+Live at **[mlookd.com](https://mlookd.com)**.
+
+A minimal, client-only Markdown (.md) viewer. Drop or choose a `.md` file and read it fully formatted — nothing is uploaded, saved, or cached. Refreshing the page always returns to a blank slate.
 
 ## Stack
 

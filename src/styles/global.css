@@ -117,6 +117,14 @@ body {
   opacity: 0.55;
 }
 
+.empty-state__title {
+  margin: 0 0 -12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+  text-align: center;
+}
+
 .empty-state__hint {
   margin: 0;
   font-size: 14px;

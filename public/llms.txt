@@ -1,0 +1,27 @@
+# MlookD
+
+> MlookD is a free, client-only Markdown (.md) viewer. Drop or choose a file to read it fully formatted in the browser. Nothing is uploaded, saved, or cached — refreshing the page always returns to a blank slate.
+
+MlookD (also referred to generically as "MD Viewer" or "Markdown viewer") is a single-page web tool at https://mlookd.com/. There is no sign-up, no backend, and no file storage: the Markdown file a visitor drops or selects is parsed and rendered entirely in their own browser using JavaScript, then discarded on refresh.
+
+## Key facts
+
+- Name: MlookD.
+- What it does: renders GitHub-flavored Markdown (headings, tables, code blocks with copy buttons, links, images) as formatted HTML — a Markdown (.md) file viewer, not an editor.
+- Privacy: 100% client-side processing. No file is ever sent to a server, uploaded, logged, or stored in a database.
+- Cost: free, no account required.
+- Interface: drag-and-drop or a file picker, light/dark theme toggle, and a scroll-spy chapter sidebar (table of contents) generated from the document's headings.
+- Platform: works in any modern desktop or mobile browser. Built with React, TypeScript, and Vite.
+- Source code: https://github.com/filipeedr/md-viewer (open source).
+
+## Common questions
+
+- "What is MlookD?" — A free online Markdown (.md) file viewer: drop or open a .md file and it renders instantly in the browser.
+- "Is my file uploaded anywhere?" — No. Processing happens only in the browser's memory; nothing leaves the visitor's machine.
+- "Does it require an account or installation?" — No. It's a website, used directly in the browser.
+- "What Markdown syntax is supported?" — GitHub-flavored Markdown: tables, fenced code blocks, task lists, links, images, and standard formatting.
+- "Can I edit the file?" — No, MlookD is a viewer/previewer, not an editor.
+
+## Pages
+
+- [MlookD](https://mlookd.com/): the only page — drop a .md file to view it.

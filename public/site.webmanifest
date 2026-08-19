@@ -1,0 +1,22 @@
+{
+  "name": "MlookD",
+  "short_name": "MlookD",
+  "description": "MlookD is a free, client-only Markdown (.md) viewer. Nothing is uploaded, saved, or cached.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f7f7f7",
+  "theme_color": "#161616",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
