@@ -117,6 +117,7 @@
           var instance = posthog;
           if (instanceName) instance = (posthog[instanceName] = []);
           instance.people = instance.people || [];
+          instance.person = instance.person || [];
           var methods = "capture identify alias people.set people.set_once people.unset people.increment people.append people.remove people.clear_charges people.set_charges person.set person.set_once person.unset person.increment person.append person.remove group setPersonProperties setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags resetGroups get_distinct_id getGroups get_session_id get_session_replay_url startSessionRecording stopSessionRecording sessionRecordingStarted opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing".split(" ");
           methods.forEach(function (method) {
             var parts = method.split(".");
