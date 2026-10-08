@@ -3,7 +3,7 @@ import EmptyState from "./components/EmptyState";
 import RepoLink from "./components/RepoLink";
 import ThemeToggle from "./components/ThemeToggle";
 import Viewer from "./components/Viewer";
-import { renderMarkdown, type TocItem } from "./lib/markdown";
+import { renderClipboardContent, renderMarkdown, type TocItem } from "./lib/markdown";
 import { useTheme } from "./lib/theme";
 
 interface LoadedDocument {
@@ -35,12 +35,14 @@ export default function App() {
       return;
     }
 
-    const text = event.clipboardData?.getData("text/plain");
-    if (!text) return;
+    const clipboard = event.clipboardData;
+    const text = clipboard?.getData("text/plain") ?? "";
+    const html = clipboard?.getData("text/html");
+    if (!text && !html) return;
 
     event.preventDefault();
-    const { html, headings } = renderMarkdown(text);
-    setLoadedDocument({ fileName: "Pasted text", html, headings });
+    const rendered = renderClipboardContent(text, html);
+    setLoadedDocument({ fileName: "Pasted text", ...rendered });
   }, []);
 
   useEffect(() => {

@@ -26,6 +26,21 @@ function slugify(text: string): string {
     .replace(/\s+/g, "-");
 }
 
+function createHeadingId(plain: string, level: number): string {
+  const base = `h-${slugify(plain) || "section"}`;
+  let id = base;
+  let suffix = 1;
+  while (usedIds.has(id)) {
+    id = `${base}-${suffix}`;
+    suffix += 1;
+  }
+  usedIds.add(id);
+  if (level <= TOC_MAX_DEPTH && plain !== "") {
+    collectedHeadings.push({ id, text: plain, level });
+  }
+  return id;
+}
+
 // Turns rendered inline HTML into the plain text the TOC shows: strips tags
 // and decodes every entity in one pass — both the ones marked escapes
 // (&amp;, &lt;, …) and the ones written in the source (&nbsp;, &eacute;,
@@ -85,23 +100,7 @@ renderer.code = function code({ text, lang }: Tokens.Code): string {
 renderer.heading = function heading(token: Tokens.Heading) {
   const inline = this.parser.parseInline(token.tokens);
   const plain = plainText(inline).trim();
-  const base = `h-${slugify(plain) || "section"}`;
-  // Suffix until the id is actually free rather than trusting a per-base
-  // counter: "Intro" / "Intro" / "Intro 1" would otherwise emit h-intro-1
-  // twice, and getElementById only ever finds the first one.
-  let id = base;
-  let suffix = 1;
-  while (usedIds.has(id)) {
-    id = `${base}-${suffix}`;
-    suffix += 1;
-  }
-  usedIds.add(id);
-  // A heading with no text at all (a bare image without alt) would render as
-  // a focusable row with no accessible name, so it is left out of the TOC —
-  // it still gets an id, which costs nothing.
-  if (token.depth <= TOC_MAX_DEPTH && plain !== "") {
-    collectedHeadings.push({ id, text: plain, level: token.depth });
-  }
+  const id = createHeadingId(plain, token.depth);
   return `<h${token.depth} id="${id}">${inline}</h${token.depth}>\n`;
 };
 
@@ -116,10 +115,49 @@ marked.setOptions({
  * dangerouslySetInnerHTML, plus the h1–h3 headings found along the way
  * (id/text/level) for the table of contents. Runs entirely client-side.
  */
-export function renderMarkdown(source: string): { html: string; headings: TocItem[] } {
+export function renderMarkdown(
+  source: string,
+  options: { preserveLineBreaks?: boolean } = {},
+): { html: string; headings: TocItem[] } {
   collectedHeadings = [];
   usedIds.clear();
-  const rawHtml = marked.parse(source, { async: false }) as string;
+  const rawHtml = marked.parse(source, {
+    async: false,
+    breaks: options.preserveLineBreaks ?? false,
+  }) as string;
   const html = DOMPurify.sanitize(rawHtml, { USE_PROFILES: { html: true } });
+  return { html, headings: collectedHeadings };
+}
+
+/**
+ * Uses rich clipboard HTML when available so copied paragraphs, headings,
+ * lists, and other structure stay intact. Clipboard HTML is sanitized before
+ * parsing and again before it reaches dangerouslySetInnerHTML. Plain-text
+ * paste keeps its line breaks instead of running separate lines together.
+ */
+export function renderClipboardContent(
+  text: string,
+  clipboardHtml?: string,
+): { html: string; headings: TocItem[] } {
+  if (!clipboardHtml?.trim()) {
+    return renderMarkdown(text, { preserveLineBreaks: true });
+  }
+
+  collectedHeadings = [];
+  usedIds.clear();
+
+  const safeClipboardHtml = DOMPurify.sanitize(clipboardHtml, {
+    USE_PROFILES: { html: true },
+    FORBID_ATTR: ["class", "id", "style"],
+  });
+  const body = new DOMParser().parseFromString(safeClipboardHtml, "text/html").body;
+
+  for (const heading of body.querySelectorAll("h1, h2, h3, h4, h5, h6")) {
+    const level = Number(heading.tagName.slice(1));
+    const plain = plainText(heading.innerHTML).trim();
+    heading.id = createHeadingId(plain, level);
+  }
+
+  const html = DOMPurify.sanitize(body.innerHTML, { USE_PROFILES: { html: true } });
   return { html, headings: collectedHeadings };
 }
