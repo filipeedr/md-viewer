@@ -1,8 +1,12 @@
-# MlookD
+<img width="1824" height="1025" alt="Screenshot 2026-10-08 at 08 46 54" src="https://github.com/user-attachments/assets/279112b6-3e29-4139-b5dc-239c368e744a" /># MlookD
 
 Live at **[mlookd.com](https://mlookd.com)**.
 
 A minimal, client-only Markdown (.md) viewer. Drop or choose a `.md` file, or paste text with `Ctrl+V` / `⌘V` and read it fully formatted — nothing is uploaded, saved, or cached. Refreshing the page always returns to a blank slate.
+
+<img width="1824" height="1025" alt="Screenshot 2026-10-08 at 08 45 23" src="https://github.com/user-attachments/assets/fc866abf-ec00-493c-bd3a-0aa0b57fa4e7" />
+<img width="1824" height="1025" alt="Screenshot 2026-10-08 at 08 45 46" src="https://github.com/user-attachments/assets/828d26b3-2321-4618-8a86-6bc2b6e248a7" />
+<img width="1824" height="1025" alt="Screenshot 2026-10-08 at 08 47 11" src="https://github.com/user-attachments/assets/455cf1ea-0fc4-477d-a9ea-bea99d742a64" />
 
 ## Stack
 
