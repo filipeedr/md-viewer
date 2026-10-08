@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import EmptyState from "./components/EmptyState";
 import RepoLink from "./components/RepoLink";
 import ThemeToggle from "./components/ThemeToggle";
@@ -23,6 +23,30 @@ export default function App() {
     const { html, headings } = renderMarkdown(text);
     setLoadedDocument({ fileName: file.name, html, headings });
   }, []);
+
+  const handlePaste = useCallback((event: ClipboardEvent) => {
+    const target = event.target;
+    if (
+      target instanceof HTMLElement &&
+      (target.isContentEditable ||
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement)
+    ) {
+      return;
+    }
+
+    const text = event.clipboardData?.getData("text/plain");
+    if (!text) return;
+
+    event.preventDefault();
+    const { html, headings } = renderMarkdown(text);
+    setLoadedDocument({ fileName: "Pasted text", html, headings });
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("paste", handlePaste);
+    return () => document.removeEventListener("paste", handlePaste);
+  }, [handlePaste]);
 
   return (
     <>

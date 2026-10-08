@@ -101,7 +101,7 @@ export default function EmptyState({ onFileSelected }: EmptyStateProps) {
             don't render CSS/JS, so the page still has a real, keyword-clear
             heading without changing the minimal on-screen design. */}
         <h1 className="visually-hidden">MlookD — free online Markdown (.md) viewer</h1>
-        <p className="empty-state__hint">Just drop or choose your .md file</p>
+        <p className="empty-state__hint">Drop or choose a .md file, or paste text</p>
         {error && <p className="empty-state__error">{error}</p>}
       </div>
 
