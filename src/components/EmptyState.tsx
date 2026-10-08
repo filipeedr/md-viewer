@@ -107,8 +107,7 @@ export default function EmptyState({ onFileSelected }: EmptyStateProps) {
 
       <div className="empty-state__footer">
         <p>
-          Your Markdown file is processed on your device and never uploaded. Page view analytics are
-          sent to PostHog.
+          Your Markdown file is processed on your device and never uploaded.
         </p>
         <p className="visually-hidden">
           Renders GitHub-flavored Markdown — headings, tables, code blocks, links, and images.
