@@ -50,7 +50,7 @@
         "name": "MlookD",
         "alternateName": "MD Viewer",
         "url": "https://mlookd.com/",
-        "description": "MlookD is a free, client-only Markdown (.md) viewer. Drop or choose a file to render it fully formatted in the browser, with dark mode and a chapter sidebar. Nothing is uploaded, saved, or cached — refreshing always returns to a blank slate.",
+        "description": "MlookD is a free, client-side Markdown (.md) viewer. Files are rendered in the browser and never uploaded. When configured, page-view analytics are sent to PostHog; file contents are never sent.",
         "applicationCategory": "UtilitiesApplication",
         "operatingSystem": "Any",
         "browserRequirements": "Requires a modern browser with JavaScript enabled",
@@ -87,6 +87,59 @@
         document.documentElement.dataset.theme = t;
       })();
     </script>
+
+    <script>
+      (function (document, window) {
+        var token = "%VITE_POSTHOG_PROJECT_TOKEN%";
+        if (!token.startsWith("phc_")) return;
+
+        var configuredHost = "%VITE_POSTHOG_HOST%";
+        var apiHost = configuredHost.startsWith("https://")
+          ? configuredHost
+          : "https://us.i.posthog.com";
+        var posthog = window.posthog || [];
+
+        if (posthog.__SV || posthog.__loaded) return;
+        window.posthog = posthog;
+        posthog._i = [];
+        posthog.init = function (projectToken, options, instanceName) {
+          var script = document.createElement("script");
+          script.type = "text/javascript";
+          script.crossOrigin = "anonymous";
+          script.async = true;
+          script.src = options.api_host.replace(".i.posthog.com", "-assets.i.posthog.com") + "/static/array.js";
+          script.onerror = function () {
+            script.remove();
+          };
+          var firstScript = document.getElementsByTagName("script")[0];
+          firstScript.parentNode.insertBefore(script, firstScript);
+
+          var instance = posthog;
+          if (instanceName) instance = (posthog[instanceName] = []);
+          instance.people = instance.people || [];
+          var methods = "capture identify alias people.set people.set_once people.unset people.increment people.append people.remove people.clear_charges people.set_charges person.set person.set_once person.unset person.increment person.append person.remove group setPersonProperties setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags resetGroups get_distinct_id getGroups get_session_id get_session_replay_url startSessionRecording stopSessionRecording sessionRecordingStarted opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing".split(" ");
+          methods.forEach(function (method) {
+            var parts = method.split(".");
+            var target = parts.length === 2 ? instance[parts[0]] : instance;
+            var name = parts.length === 2 ? parts[1] : method;
+            target[name] = function () {
+              target.push([name].concat(Array.prototype.slice.call(arguments)));
+            };
+          });
+          posthog._i.push([projectToken, options, instanceName]);
+          posthog.__SV = 1;
+        };
+
+        posthog.init(token, {
+          api_host: apiHost,
+          defaults: "2026-05-30",
+          autocapture: false,
+          capture_pageview: true,
+          capture_pageleave: true,
+          disable_session_recording: true,
+        });
+      })(document, window);
+    </script>
   </head>
   <body>
     <div id="root">
@@ -108,8 +161,8 @@
         </div>
         <div class="empty-state__footer">
           <p>
-            The file is formatted and processed solely on the local machine. Nothing is sent to
-            servers or stored in a database.
+            Your Markdown file stays on your device. Page view analytics are sent to PostHog; file
+            contents are never uploaded.
           </p>
           <p class="visually-hidden">
             Renders GitHub-flavored Markdown — headings, tables, code blocks, links, and images.

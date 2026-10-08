@@ -107,8 +107,8 @@ export default function EmptyState({ onFileSelected }: EmptyStateProps) {
 
       <div className="empty-state__footer">
         <p>
-          The file is formatted and processed solely on the local machine. Nothing is sent to
-          servers or stored in a database.
+          Your Markdown file is processed on your device and never uploaded. Page view analytics are
+          sent to PostHog.
         </p>
         <p className="visually-hidden">
           Renders GitHub-flavored Markdown — headings, tables, code blocks, links, and images.

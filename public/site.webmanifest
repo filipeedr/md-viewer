@@ -1,7 +1,7 @@
 {
   "name": "MlookD",
   "short_name": "MlookD",
-  "description": "MlookD is a free, client-only Markdown (.md) viewer. Nothing is uploaded, saved, or cached.",
+  "description": "MlookD is a free, client-side Markdown (.md) viewer. Markdown files are processed in the browser and never uploaded.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
